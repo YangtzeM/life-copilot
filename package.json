@@ -1,0 +1,12 @@
+{
+  "name": "life-copilot",
+  "private": true,
+  "workspaces": [
+    "apps/mobile",
+    "packages/shared"
+  ],
+  "scripts": {
+    "mobile": "npm --workspace apps/mobile run start"
+  }
+}
+
