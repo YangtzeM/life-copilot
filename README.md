@@ -1,6 +1,8 @@
 # life-copilot
 
-Minimal monorepo skeleton for a life copilot product.
+Life Copilot MVP monorepo.
+
+The MVP helps procrastination-prone users capture natural language tasks, parse priority, generate small next-action plans, schedule reminders, support review, and store basic memory.
 
 ## Repository Structure
 
@@ -20,3 +22,52 @@ life-copilot/
   README.md
 ```
 
+## Local Startup
+
+Start the backend, PostgreSQL, Redis, and Celery worker:
+
+```powershell
+docker compose up --build
+```
+
+API base URL:
+
+```text
+http://localhost:8000
+```
+
+Health check:
+
+```powershell
+curl http://localhost:8000/health
+```
+
+Capture a task:
+
+```powershell
+curl -X POST http://localhost:8000/tasks/capture `
+  -H "Content-Type: application/json" `
+  -d "{\"text\":\"今天整理报销材料，周五前完成\"}"
+```
+
+Generate a plan with the returned `task.id`:
+
+```powershell
+curl -X POST http://localhost:8000/plans/generate `
+  -H "Content-Type: application/json" `
+  -d "{\"task_id\":\"<task-id>\"}"
+```
+
+## Backend Tests
+
+```powershell
+cd apps/api
+python -m pip install -e ".[dev]"
+pytest
+```
+
+The tests run against SQLite and disable Celery enqueueing so they do not require PostgreSQL or Redis.
+
+## MVP Boundaries
+
+This repository intentionally avoids multi-agent orchestration, LangGraph, vector databases, broad integrations, and autonomous external actions.

@@ -1,4 +1,4 @@
-export type TaskPriority = "low" | "medium" | "high";
+export type TaskPriority = "urgent" | "important" | "optional" | "low_value";
 
 export interface ParsedTask {
   title: string;
@@ -20,4 +20,3 @@ export interface GeneratedPlan {
   summary: string;
   steps: PlanStep[];
 }
-

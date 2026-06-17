@@ -1,7 +1,60 @@
 services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: life_copilot
+      POSTGRES_USER: life
+      POSTGRES_PASSWORD: life
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U life -d life_copilot"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
   api:
     build:
       context: ./apps/api
+    environment:
+      LIFE_DATABASE_URL: postgresql+psycopg://life:life@postgres:5432/life_copilot
+      LIFE_REDIS_URL: redis://redis:6379/0
+      LIFE_MODEL_PROVIDER: mock
+      LIFE_ENQUEUE_TASKS: "true"
     ports:
       - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
+  worker:
+    build:
+      context: ./apps/api
+    command: celery -A app.celery_app.celery_app worker --loglevel=info
+    environment:
+      LIFE_DATABASE_URL: postgresql+psycopg://life:life@postgres:5432/life_copilot
+      LIFE_REDIS_URL: redis://redis:6379/0
+      LIFE_MODEL_PROVIDER: mock
+      LIFE_ENQUEUE_TASKS: "true"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+volumes:
+  postgres_data:

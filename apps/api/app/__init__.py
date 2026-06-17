@@ -1,0 +1,2 @@
+"""Life Copilot API package."""
+
