@@ -47,7 +47,7 @@ Capture a task:
 ```powershell
 curl -X POST http://localhost:8000/tasks/capture `
   -H "Content-Type: application/json" `
-  -d "{\"text\":\"今天整理报销材料，周五前完成\"}"
+  -d "{\"text\":\"Prepare reimbursement materials by Friday\"}"
 ```
 
 Generate a plan with the returned `task.id`:
